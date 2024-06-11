@@ -1,0 +1,61 @@
+---
+- name: Provision new LXC container with base software
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+        autoclean: true
+        autoremove: true
+
+    - name: install qemu-guest-agent
+      ansible.builtin.apt:
+        pkg:
+          - vim
+          - curl
+
+    - name: get docker install script
+      ansible.builtin.command:
+        cmd: "curl -fsSL https://get.docker.com -o get-docker.sh"
+    
+    - name: run docker install script
+      ansible.builtin.command:
+        cmd: "sudo sh ./get-docker.sh"
+
+    - name: test docker
+      register: docker_output
+      ansible.builtin.command:
+        cmd: "docker ps"
+
+    - debug:
+        var: docker_output.stdout_lines
+
+    - name: Create portainer agent directory
+      ansible.builtin.file:
+        path: /home/root/portainer_agent
+        state: directory
+
+    - name: Copy files to remote host
+      ansible.builtin.copy:
+        src: ../rollouts/portainer_agent
+        dest: /home/root
+
+    - name: Run portainer agent container
+      ansible.builtin.command:
+        chdir: /home/root/portainer_agent
+        cmd: docker compose up -d
+      when: docker_output is succeeded
+
+    - name: Copy glances folder to remote host
+      ansible.builtin.copy:
+        src: ../rollouts/glances-minimal
+        dest: /home/root/
+
+    - name: Run glances container
+      ansible.builtin.command:
+        chdir: /home/root/glances-minimal
+        cmd: docker compose up -d

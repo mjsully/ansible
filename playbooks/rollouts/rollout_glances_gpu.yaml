@@ -1,0 +1,24 @@
+---
+- name: Rollout glances container
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Copy glances folder to remote host
+      ansible.builtin.copy:
+        src: ./glances-gpu
+        dest: /home/serveradmin/
+
+    - name: Run glances container
+      ansible.builtin.command:
+        chdir: /home/serveradmin/glances-gpu
+        cmd: docker compose up -d --build
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines

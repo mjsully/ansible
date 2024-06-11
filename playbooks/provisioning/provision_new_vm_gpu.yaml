@@ -1,0 +1,132 @@
+---
+- name: Provision new server with base software
+  hosts: vms-gpu
+  become: true
+
+  tasks:
+
+    - name: update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+        autoclean: true
+        autoremove: true
+
+    - name: install qemu-guest-agent
+      ansible.builtin.apt:
+        pkg:
+          - gcc
+          - qemu-guest-agent
+
+    - name: get docker install script
+      ansible.builtin.command:
+        cmd: "curl -fsSL https://get.docker.com -o get-docker.sh"
+    
+    - name: run docker install script
+      ansible.builtin.command:
+        cmd: "sudo sh ./get-docker.sh"
+
+    - name: test docker
+      register: docker_output
+      ansible.builtin.command:
+        cmd: "docker ps"
+
+    - debug:
+        var: docker_output.stdout_lines
+
+    - name: create docker group
+      ignore_errors: true
+      ansible.builtin.command:
+        cmd: "groupadd docker"
+
+    - name: add user to docker group
+      ansible.builtin.command:
+        cmd: "usermod -aG docker serveradmin"
+
+    - name: Create portainer agent directory
+      ansible.builtin.file:
+        path: /home/serveradmin/portainer_agent
+        state: directory
+
+    - name: Copy files to remote host
+      ansible.builtin.copy:
+        src: ../rollouts/portainer_agent
+        dest: /home/serveradmin
+
+    - name: Run portainer agent container
+      ansible.builtin.command:
+        chdir: /home/serveradmin/portainer_agent
+        cmd: docker compose up -d
+      when: docker_output is succeeded
+
+    - name: Copy glances folder to remote host
+      ansible.builtin.copy:
+        src: ../rollouts/glances-gpu
+        dest: /home/serveradmin/
+
+    - name: Run glances container
+      ansible.builtin.command:
+        chdir: /home/serveradmin/glances-gpu
+        cmd: docker compose up -d
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        # cmd: docker ps {% raw %} -f name=portainer_agent --format "{{.Status}}" {% endraw %}
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines[0]
+
+    - name: test
+      ignore_errors: true
+      ansible.builtin.command:
+        cmd: "rm /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg"
+
+    - name: add NVIDIA to repositories
+      ansible.builtin.shell:
+        cmd: "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+                && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+                  sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+                  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list"
+
+    - name: update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: false
+
+    - name: install nvidia-container-toolkit
+      ansible.builtin.apt:
+        pkg: 
+          - nvidia-container-toolkit
+
+    - name: configure nvidia runtime for docker
+      ansible.builtin.command:
+        cmd: "nvidia-ctk runtime configure --runtime=docker"
+
+    - name: restart docker
+      ansible.builtin.command:
+        cmd: "systemctl restart docker"
+
+    - name: Download CUDA keyring
+      ansible.builtin.shell:
+        cmd: "wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb"
+
+    - name: install CUDA keyring
+      ansible.builtin.command:
+        cmd: "dpkg -i cuda-keyring_1.1-1_all.deb"
+
+    - name: update cache
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: false
+
+    - name: install CUDA drivers & nvidia drivers
+      ansible.builtin.apt:
+        pkg:
+          - cuda-drivers
+          - nvidia-driver-550
+          - nvidia-cuda-toolkit
+
+    - name: reboot server
+      ansible.builtin.reboot:

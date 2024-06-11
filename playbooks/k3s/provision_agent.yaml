@@ -1,0 +1,28 @@
+---
+- name: Provision new server with base software
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+        autoclean: true
+        autoremove: true
+
+    - name: install qemu-guest-agent
+      ansible.builtin.apt:
+        pkg:
+          - qemu-guest-agent
+          - nfs-common
+
+    - name: reboot
+      ansible.builtin.reboot:
+
+    - name: install k3s as server
+      ansible.builtin.shell:
+        cmd: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{k3s_version}} K3S_URL={{server}} K3S_TOKEN={{token}} sh -
+
+

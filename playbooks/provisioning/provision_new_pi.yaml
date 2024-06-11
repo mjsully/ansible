@@ -1,0 +1,85 @@
+---
+- name: Provision new server with base software
+  hosts: pis
+  become: true
+
+  tasks:
+
+    - name: update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+        autoclean: true
+        autoremove: true
+
+    - name: install qemu-guest-agent
+      ansible.builtin.apt:
+        pkg:
+          - vim
+
+    - name: get docker install script
+      ansible.builtin.command:
+        cmd: "curl -fsSL https://get.docker.com -o get-docker.sh"
+    
+    - name: run docker install script
+      ansible.builtin.command:
+        cmd: "sudo sh ./get-docker.sh"
+
+    - name: test docker
+      register: docker_output
+      ansible.builtin.command:
+        cmd: "docker ps"
+
+    - debug:
+        var: docker_output.stdout_lines
+
+    - name: create docker group
+      ignore_errors: true
+      ansible.builtin.command:
+        cmd: "groupadd docker"
+
+    - name: add user to docker group
+      ansible.builtin.command:
+        cmd: "usermod -aG docker serveradmin"
+
+    - name: Create portainer agent directory
+      ansible.builtin.file:
+        path: /home/serveradmin/portainer_agent
+        state: directory
+
+    - name: Copy files to remote host
+      ansible.builtin.copy:
+        src: ../rollouts/portainer_agent
+        dest: /home/serveradmin
+
+    - name: Run portainer agent container
+      ansible.builtin.command:
+        chdir: /home/serveradmin/portainer_agent
+        cmd: docker compose up -d
+      when: docker_output is succeeded
+
+    - name: Copy glances folder to remote host
+      ansible.builtin.copy:
+        src: ../rollouts/glances
+        dest: /home/serveradmin/
+
+    - name: Run glances container
+      ansible.builtin.command:
+        chdir: /home/serveradmin/glances
+        cmd: docker compose up -d
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        # cmd: docker ps {% raw %} -f name=portainer_agent --format "{{.Status}}" {% endraw %}
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines[0]
+
+    - name: turn off power LED
+      ansible.builtin.command:
+        cmd: echo "dtparam=pwr_led_activelow=off" >> /boot/firmware/config.txt
+
+    - name: reboot
+      ansible.builtin.reboot:

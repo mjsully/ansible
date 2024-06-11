@@ -1,0 +1,36 @@
+---
+- name: Provision new server with base software
+  hosts: all
+  become: true
+  vars: 
+    node_taint: "CriticalAddonsOnly=true:NoExecute"
+  
+  tasks:
+
+    - name: update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+        autoclean: true
+        autoremove: true
+
+    - name: install qemu-guest-agent
+      ansible.builtin.apt:
+        pkg:
+          - qemu-guest-agent
+          - nfs-common
+
+    - name: reboot
+      ansible.builtin.reboot:
+
+    - name: install k3s as server
+      ansible.builtin.shell:
+        cmd: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{k3s_version}} sh -s - server --node-taint {{node_taint}}
+
+    - name: get k3s token
+      register: k3s_token
+      ansible.builtin.command:
+        cmd: cat /var/lib/rancher/k3s/server/node-token
+
+    - debug:
+        msg: "k3s token: {{k3s_token.stdout}}"

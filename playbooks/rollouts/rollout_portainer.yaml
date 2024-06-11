@@ -1,0 +1,24 @@
+---
+- name: Rollout portainer agent
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Copy glances folder to remote host
+      ansible.builtin.copy:
+        src: ./portainer_agent
+        dest: /home/serveradmin/
+
+    - name: Run portainer agent
+      ansible.builtin.command:
+        chdir: /home/serveradmin/portainer_agent
+        cmd: docker compose up -d --build
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines
