@@ -24,7 +24,7 @@
     - name: Run diun container
       ansible.builtin.command:
         chdir: /home/serveradmin/diun
-        cmd: docker compose up -d --force-recreate
+        cmd: docker compose down && docker compose up -d
 
     - name: Get container status
       register: container_status
