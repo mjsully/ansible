@@ -12,7 +12,7 @@ services:
     environment:
       - TZ=Etc/UTC
       - DIUN_WATCH_WORKERS=20
-      - DIUN_WATCH_SCHEDULE=0 */6 * * *
+      - DIUN_WATCH_SCHEDULE=0 */1 * * *
       - DIUN_WATCH_JITTER=30s
       - DIUN_PROVIDERS_DOCKER=true
       - DIUN_NOTIF_GOTIFY_TEMPLATETITLE={{ .Entry.Image }}
