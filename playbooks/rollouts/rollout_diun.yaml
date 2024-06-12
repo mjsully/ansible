@@ -22,9 +22,10 @@
         echo HOSTNAME={{ansible_hostname}} >> .env
 
     - name: Run diun container
-      ansible.builtin.command:
-        chdir: /home/serveradmin/diun
-        cmd: docker compose down && docker compose up -d
+      shell: |
+        cd /home/serveradmin/diun/
+        docker compose down
+        docker compose up -d
 
     - name: Get container status
       register: container_status
