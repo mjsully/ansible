@@ -11,15 +11,9 @@
         src: ./diun
         dest: /home/serveradmin/
 
-    - name: Stop existing container if exists and delete docker volume
-      shell: |
-        docker container stop diun
-        docker volume rm diun_diun-data
-
     - name: Build .env file
       shell: |
         cd /home/serveradmin/diun/
-        docker volume rm diun_diun-data
         rm .env
         echo DIUN_NOTIF_GOTIFY_ENDPOINT={{DIUN_NOTIF_GOTIFY_ENDPOINT}} >> .env
         echo DIUN_NOTIF_GOTIFY_TOKEN={{DIUN_NOTIF_GOTIFY_TOKEN}} >> .env
