@@ -1,0 +1,19 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:stable
+    hostname: tailscale-${HOSTNAME}
+    dns:
+      - ${DNS_SERVER_1}
+      - ${DNS_SERVER_2}
+    container_name: tailscale
+    env_file: .env
+    volumes:
+      - ./tailscale:/var/lib
+      - /dev/net/tun:/dev/net/tun
+      - ./setup.sh:/setup.sh
+    cap_add:
+      - net_admin
+      - sys_module
+    command: tailscaled
+    privileged: true
+    restart: unless-stopped

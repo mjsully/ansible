@@ -1,0 +1,46 @@
+---
+- name: Rollout tailscale container
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Copy tailscale folder to remote host
+      ansible.builtin.copy:
+        src: ./tailscale
+        dest: /home/serveradmin/
+
+    - name: Build .env file
+      shell: |
+        cd /home/serveradmin/tailscale/
+        rm .env
+        echo DNS_SERVER_1={{DNS_SERVER_1}} >> .env
+        echo DNS_SERVER_2={{DNS_SERVER_2}} >> .env
+        echo HOSTNAME={{ansible_hostname}} >> .env
+
+    - name: Build tailscape up command
+      shell: |
+        cd /home/serveradmin/tailscale/
+        echo "tailscale up --accept-routes --advertise-routes={{TS_ROUTES}} --advertise-exit-node --auth-key={{TS_OAUTH_KEY}} --advertise-tags={{TS_TAGS}}" >> setup.sh
+        chmod +x setup.sh
+
+    - name: Run tailscale container
+      shell: |
+        cd /home/serveradmin/tailscale/
+        docker compose down
+        docker compose up -d
+
+    - name: Setup subnet router
+      shell: |
+        cd /home/serveradmin/tailscale/
+        docker exec -it tailscale sh setup.sh
+    
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines
+
+
