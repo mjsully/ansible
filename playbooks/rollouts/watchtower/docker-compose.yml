@@ -1,0 +1,16 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    dns: 
+      - ${DNS_SERVER_1}
+      - ${DNS_SERVER_2}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    hostname: ${HOSTNAME}
+    env_file: .env
+    environment: 
+      - WATCHTOWER_MONITOR_ONLY=true
+      - WATCHTOWER_NOTIFICATIONS=gotify
+      - WATCHTOWER_SCHEDULE=0 0 8 * * *
+    restart: always

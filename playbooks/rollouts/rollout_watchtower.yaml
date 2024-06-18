@@ -1,0 +1,36 @@
+---
+- name: Rollout watchtower container
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: Copy watchtower folder to remote host
+      ansible.builtin.copy:
+        src: ./watchtower
+        dest: /home/serveradmin/
+
+    - name: Build .env file
+      shell: |
+        cd /home/serveradmin/watchtower/
+        rm .env
+        echo WATCHTOWER_NOTIFICATION_GOTIFY_URL={{WATCHTOWER_NOTIFICATION_GOTIFY_URL}} >> .env
+        echo WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN={{WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN}} >> .env
+        echo DNS_SERVER_1={{DNS_SERVER_1}} >> .env
+        echo DNS_SERVER_2={{DNS_SERVER_2}} >> .env
+        echo HOSTNAME={{ansible_hostname}} >> .env
+
+    - name: Run watchtower container
+      shell: |
+        cd /home/serveradmin/watchtower/
+        docker compose down
+        docker compose up -d
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines
