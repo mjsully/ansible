@@ -9,4 +9,6 @@ services:
     restart: "unless-stopped"
     pid: host
     build: .
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     command: "glances -w"

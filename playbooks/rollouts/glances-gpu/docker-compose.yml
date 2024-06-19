@@ -9,6 +9,8 @@ services:
     restart: "unless-stopped"
     pid: host
     build: .
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     command: "glances -w"
     deploy:
       resources:
@@ -28,6 +30,8 @@ services:
     restart: "unless-stopped"
     pid: host
     build: .
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     command: "glances --export prometheus -C /etc/glances.conf --quiet"
     deploy:
       resources:
