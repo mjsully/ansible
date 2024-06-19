@@ -12,7 +12,7 @@
 
     - name: Run glances container
       ansible.builtin.command:
-        chdir: /home/serveradmin/glances_minimal
+        chdir: /home/serveradmin/glances-minimal
         cmd: docker compose up -d --build
 
     - name: Get container status
