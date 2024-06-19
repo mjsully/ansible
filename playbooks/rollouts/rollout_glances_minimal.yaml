@@ -7,7 +7,7 @@
 
     - name: Copy glances folder to remote host
       ansible.builtin.copy:
-        src: ./glances_minimal
+        src: ./glances-minimal
         dest: /home/serveradmin/
 
     - name: Run glances container
