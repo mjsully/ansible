@@ -1,0 +1,17 @@
+---
+- name: Shutdown remote host
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: send shutdown command
+      community.general.shutdown:
+        delay: 60
+
+    - name: Send discord message to confirm shutdown proceeding
+      ignore_errors: true
+      community.general.discord:
+        webhook_id: "{{webhook_id}}"
+        webhook_token: "{{webhook_token}}"
+        content: "{{ inventory_hostname }} will shutdown soon"
