@@ -5,12 +5,6 @@
 
   tasks:
 
-    - debug:
-        var: webhook_id
-
-    - debug:
-        var: webhook_token
-
     - name: send shutdown command
       community.general.shutdown:
         delay: 60
@@ -20,4 +14,9 @@
       community.general.discord:
         webhook_id: "{{webhook_id}}"
         webhook_token: "{{webhook_token}}"
-        content: "{{ inventory_hostname }} will shutdown soon"
+        embeds: 
+          - title: "Shutdown notification" 
+            description: "{{ inventory_hostname }} will shutdown soon"
+            color: 7865348
+            footer:
+              text: "Ansible Semaphore"
