@@ -8,6 +8,9 @@
     - debug:
         var: "{{webhook_id}}"
 
+    - debug:
+        var: "{{webhook_token}}"
+
     - name: send shutdown command
       community.general.shutdown:
         delay: 60
