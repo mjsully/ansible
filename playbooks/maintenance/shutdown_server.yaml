@@ -5,6 +5,9 @@
 
   tasks:
 
+    - debug:
+        var: {{webhook_id}}
+
     - name: send shutdown command
       community.general.shutdown:
         delay: 60
