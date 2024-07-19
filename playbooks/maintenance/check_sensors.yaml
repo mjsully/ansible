@@ -25,6 +25,9 @@
         ansible.builtin.shell: 
           cmd: sensors | grep "Tctl"
 
+    - debug:
+        var: sensors_output
+
     - name: manipulate string (first split)
       ansible.builtin.set_fact:
         string_output: "{{ sensors_output.stdout | split('+') }}"
