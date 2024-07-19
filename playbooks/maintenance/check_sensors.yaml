@@ -36,12 +36,12 @@
     - name: manipulate string (second split)
       ansible.builtin.set_fact:
         string_output: "{{ string_output[1] | split('.') }}"
-      when: string_output.changed
+      when: string_output != ""
       
     - name: manipulate string (select list element)
       ansible.builtin.set_fact:
         string_output: "{{string_output[0]}}"
-      when: string_output.changed
+      when: string_output != ""
 
     - name: Publish a message on an MQTT topic
       become: True
