@@ -33,12 +33,6 @@
         string_output: "{{ sensors_output.stdout | split('+') }}"
       when: sensors_output.changed
 
-    - debug:
-        var: sensors_output
-
-    - debug:
-        var: string_output
-
     - name: manipulate string (second split)
       ansible.builtin.set_fact:
         string_output: "{{ string_output[1] | split('.') }}"
