@@ -23,3 +23,6 @@
         webhook_token: "{{webhook_token}}"
         content: "Reboot required on {{ inventory_hostname }}!"
       when: reboot_required.stat.exists
+      delegate_to: localhost
+      vars:
+        ansible_become: false
