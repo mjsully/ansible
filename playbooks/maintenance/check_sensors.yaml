@@ -28,14 +28,17 @@
     - name: manipulate string (first split)
       ansible.builtin.set_fact:
         string_output: "{{ sensors_output.stdout | split('+') }}"
+      when: sensors_output.stdout != ""
 
     - name: manipulate string (second split)
       ansible.builtin.set_fact:
         string_output: "{{ string_output[1] | split('.') }}"
-
+      when: string_output != ""
+      
     - name: manipulate string (select list element)
       ansible.builtin.set_fact:
         string_output: "{{string_output[0]}}"
+      when: string_output != ""
 
     - name: Publish a message on an MQTT topic
       become: True
@@ -46,6 +49,7 @@
         username: "{{mqtt_user}}"
         password: "{{mqtt_password}}"
         server: "{{mqtt_server}}"
+      when: string_output != ""
       delegate_to: localhost
       vars:
         ansible_become: false
