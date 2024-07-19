@@ -21,3 +21,6 @@
         webhook_token: "{{webhook_token}}"
         content: "Disk space on {{ inventory_hostname }} is above 80%!"
       when: disk_usage.stdout[:-1]|int > 80
+      delegate_to: localhost
+      vars:
+        ansible_become: false
