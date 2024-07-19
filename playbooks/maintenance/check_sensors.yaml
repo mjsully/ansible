@@ -1,0 +1,51 @@
+---
+- name: lm-sensors
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    # - name: install lm-sensors package
+    #   ansible.builtin.apt:
+    #     pkg:  
+    #       - lm-sensors
+
+    - block:
+
+      - name: check sensors (Intel)
+        register: sensors_output
+        ansible.builtin.shell:
+          cmd: sensors | grep "Package"
+
+      rescue: 
+
+      - name: check sensors (AMD)
+        register: sensors_output
+        ansible.builtin.shell: 
+          cmd: sensors | grep "Tctl"
+
+    - name: manipulate string (split at '+')
+      ansible.builtin.set_fact:
+        string_output: "{{ sensors_output.stdout | split('+') }}"
+
+    - name: manipulate string (split at '.')
+      ansible.builtin.set_fact:
+        string_output: "{{ string_output[1] | split('.') }}"
+
+    - name: manipulate string (select list element)
+      ansible.builtin.set_fact:
+        string_output: "{{string_output[0]}}"
+
+    - name: Publish a message on an MQTT topic
+      become: True
+      community.general.mqtt:
+        topic: 'proxmox/temp/{{inventory_hostname}}'
+        payload: '{{string_output}}'
+        qos: 0
+        username: "{{mqtt_user}}"
+        password: "{{mqtt_password}}"
+        server: "{{mqtt_server}}"
+      delegate_to: localhost
+      vars:
+        ansible_become: false

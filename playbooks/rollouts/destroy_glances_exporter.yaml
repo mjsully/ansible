@@ -1,0 +1,31 @@
+---
+- name: Bring glances-exporter container down
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines
+
+    - name: Stop container
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker container stop glances-exporter
+    
+    - name: Prune containers
+      ansible.builtin.command:
+        cmd: docker container prune -f
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines

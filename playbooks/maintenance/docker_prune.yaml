@@ -1,0 +1,19 @@
+---
+- name: Docker cleanup script
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: prune Docker images
+      ansible.builtin.shell:
+        cmd: docker image prune -f
+
+    - name: prune Docker containers
+      ansible.builtin.shell:
+        cmd: docker container prune -f
+
+    - name: prune Docker builder
+      ansible.builtin.shell:
+        cmd: docker builder prune -f

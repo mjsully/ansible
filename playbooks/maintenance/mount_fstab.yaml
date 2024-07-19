@@ -1,0 +1,40 @@
+---
+- name: fstab stuffs
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: update and upgrade apt packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+
+    - name: install nfs-common
+      ansible.builtin.apt:
+        pkg:  
+          - nfs-common
+
+    - name: check if backup directory exists
+      stat:
+        path: /mnt/backup
+      register: backup_directory_exists
+
+    - name: make backup directory
+      ansible.builtin.shell:
+        cmd: mkdir /mnt/backup/
+      when: not backup_directory_exists.stat.exists
+
+    - name: add to fstab
+      ansible.builtin.shell:
+        cmd: echo "{{nfs_mount}}:/rclone/{{ansible_hostname}} /mnt/backup/ nfs defaults 0 0" >> /etc/fstab
+
+    - name: mount fstab
+      ansible.builtin.shell:
+        cmd: mount -a
+
+    - name: ls backups directory
+      register: directory_contents
+      ansible.builtin.shell:
+        cmd: ls /mnt/backup/
