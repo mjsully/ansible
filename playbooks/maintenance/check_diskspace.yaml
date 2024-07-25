@@ -24,3 +24,16 @@
       delegate_to: localhost
       vars:
         ansible_become: false
+
+    - name: Publish a message on an MQTT topic
+      community.general.mqtt:
+        topic: 'semaphore/disk-usage'
+        payload: "Disk space on {{ inventory_hostname }} is over 50%!"
+        qos: 0
+        username: "{{mqtt_user}}"
+        password: "{{mqtt_password}}"
+        server: "{{mqtt_server}}"
+      when: disk_usage.stdout[:-1]|int > 50
+      delegate_to: localhost
+      vars:
+        ansible_become: false
