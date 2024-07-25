@@ -6,14 +6,6 @@
 
   tasks:
 
-    - name: prune Docker images
+    - name: prune Docker system
       ansible.builtin.shell:
-        cmd: docker image prune -f
-
-    - name: prune Docker containers
-      ansible.builtin.shell:
-        cmd: docker container prune -f
-
-    - name: prune Docker builder
-      ansible.builtin.shell:
-        cmd: docker builder prune -f
+        cmd: docker system prune -f
