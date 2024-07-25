@@ -11,11 +11,6 @@
       ansible.builtin.stat:
         path: "/var/run/reboot-required"
 
-    - name:
-      ansible.builtin.shell: 
-        cmd: "cat /var/run/reboot-required"
-      when: reboot_required.stat.exists
-
     - name: Send a message to the Discord channel when reboot is required
       ignore_errors: true
       community.general.discord:
