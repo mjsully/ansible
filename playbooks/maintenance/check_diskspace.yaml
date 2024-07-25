@@ -20,7 +20,7 @@
         webhook_id: "{{webhook_id}}"
         webhook_token: "{{webhook_token}}"
         content: "Disk space on {{ inventory_hostname }} is above 80%!"
-      when: disk_usage.stdout[:-1]|int > 80
+      when: disk_usage.stdout[:-1]|int > 80 and disk_usage is defined
       delegate_to: localhost
       vars:
         ansible_become: false
@@ -28,12 +28,12 @@
     - name: Publish a message on an MQTT topic
       community.general.mqtt:
         topic: 'semaphore/disk-usage'
-        payload: "Disk space on {{ inventory_hostname }} is over 50%!"
+        payload: "Disk space on {{ inventory_hostname }} is {{ disk_usage.stdout[:-1]|int }}%"
         qos: 0
         username: "{{mqtt_user}}"
         password: "{{mqtt_password}}"
         server: "{{mqtt_server}}"
-      when: disk_usage.stdout[:-1]|int > 50
+      when: disk_usage.stdout[:-1]|int > 50 and disk_usage is defined
       delegate_to: localhost
       vars:
         ansible_become: false
