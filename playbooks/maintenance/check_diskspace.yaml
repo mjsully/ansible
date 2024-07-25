@@ -20,7 +20,7 @@
         webhook_id: "{{webhook_id}}"
         webhook_token: "{{webhook_token}}"
         content: "Disk space on {{ inventory_hostname }} is above 80%!"
-      when: disk_usage.stdout[:-1]|int > 80 and disk_usage is defined
+      when: disk_usage.stdout is defined and disk_usage and disk_usage.stdout[:-1]|int > 80
       delegate_to: localhost
       vars:
         ansible_become: false
@@ -33,7 +33,7 @@
         username: "{{mqtt_user}}"
         password: "{{mqtt_password}}"
         server: "{{mqtt_server}}"
-      when: disk_usage.stdout[:-1]|int > 50 and disk_usage is defined
+      when: disk_usage.stdout is defined and disk_usage.stdout[:-1]|int > 50
       delegate_to: localhost
       vars:
         ansible_become: false
