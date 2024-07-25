@@ -27,6 +27,7 @@
     - name: Run tailscale container
       shell: |
         cd /home/serveradmin/tailscale/
+        docker compose pull
         docker compose down
         docker compose up -d
 
