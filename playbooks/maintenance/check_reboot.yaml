@@ -22,7 +22,7 @@
         webhook_id: "{{webhook_id}}"
         webhook_token: "{{webhook_token}}"
         content: "Reboot required on {{ inventory_hostname }}!"
-      when: reboot_required.stat.exists
+      when: reboot_required.stat is defined and reboot_required.stat.exists
       delegate_to: localhost
       vars:
         ansible_become: false
@@ -35,7 +35,7 @@
         username: "{{mqtt_user}}"
         password: "{{mqtt_password}}"
         server: "{{mqtt_server}}"
-      when: reboot_required.stat.exists
+      when: reboot_required.stat is defined and reboot_required.stat.exists
       delegate_to: localhost
       vars:
         ansible_become: false
