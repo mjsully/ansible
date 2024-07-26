@@ -31,7 +31,7 @@
         - name: check if fstab entry already exists
           register: fstab_entry_exists
           ansible.builtin.shell:
-            cmd: grep '{{nfs_mount}}:/rclone/{{ansible_hostname}} /mnt/backup/' /etc/fstab
+            cmd: grep '{{NFS_MOUNT}}:/rclone/{{ansible_hostname}} /mnt/backup/' /etc/fstab
         
       rescue:
 
@@ -40,7 +40,7 @@
 
         - name: add to fstab
           ansible.builtin.shell:
-            cmd: echo "{{nfs_mount}}:/rclone/{{ansible_hostname}} /mnt/backup/ nfs defaults 0 0" >> /etc/fstab
+            cmd: echo "{{NFS_MOUNT}}:/rclone/{{ansible_hostname}} /mnt/backup/ nfs defaults 0 0" >> /etc/fstab
 
     - name: mount fstab
       ansible.builtin.shell:
