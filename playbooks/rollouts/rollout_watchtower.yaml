@@ -15,11 +15,10 @@
       shell: |
         cd /home/serveradmin/watchtower/
         rm .env
-        echo WATCHTOWER_NOTIFICATION_GOTIFY_URL={{WATCHTOWER_NOTIFICATION_GOTIFY_URL}} >> .env
-        echo WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN={{WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN}} >> .env
         echo DNS_SERVER_1={{DNS_SERVER_1}} >> .env
         echo DNS_SERVER_2={{DNS_SERVER_2}} >> .env
         echo HOSTNAME={{ansible_hostname}} >> .env
+        echo WATCHTOWER_NOTIFICATION_URL={{WATCHTOWER_NOTIFICATION_URL}} >> .env
 
     - name: Run watchtower container
       shell: |

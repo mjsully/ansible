@@ -11,6 +11,6 @@ services:
     env_file: .env
     environment: 
       - WATCHTOWER_MONITOR_ONLY=true
-      - WATCHTOWER_NOTIFICATIONS=gotify
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
       - WATCHTOWER_SCHEDULE=0 0 5 * * *
     restart: always
