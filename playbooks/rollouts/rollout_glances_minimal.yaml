@@ -2,18 +2,27 @@
 - name: Rollout glances container
   hosts: all
   become: true
-
+    
   tasks:
+
+    - name: Docker login
+      register: status
+      ansible.builtin.shell:
+        cmd: "echo {{token}} | docker login ghcr.io -u {{username}} --password-stdin"
 
     - name: Copy glances folder to remote host
       ansible.builtin.copy:
         src: ./glances-minimal
         dest: /home/serveradmin/
 
+    - name: Stop existing glances container
+      ansible.builtin.shell:
+        cmd: docker container stop glances && docker container rm glances
+
     - name: Run glances container
       ansible.builtin.command:
         chdir: /home/serveradmin/glances-minimal
-        cmd: docker compose up -d --build
+        cmd: docker compose up -d
 
     - name: Get container status
       register: container_status
