@@ -1,0 +1,14 @@
+---
+- name: Copy files
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: Copy files
+      register: src_contents
+      ansible.builtin.copy:
+        remote_src: yes
+        src: "{{src_directory}}/"
+        dest: "{{dest_directory}}/"
