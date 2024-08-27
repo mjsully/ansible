@@ -1,0 +1,11 @@
+---
+- name: run generic script 
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: run script
+      ansible.builtin.shell:
+        cmd: . {{SCRIPT}}
