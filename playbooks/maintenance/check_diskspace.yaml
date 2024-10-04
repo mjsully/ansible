@@ -16,7 +16,7 @@
 
     - name: Send Gotify push
       ansible.builtin.uri:
-        url: https://gotify.mattjsullivan.uk/message?token=AUkLWSRlxnq66Kk
+        url: https://gotify.mattjsullivan.uk/message?token={{gotify_token}}
         method: POST
         body_format: json
         body:
