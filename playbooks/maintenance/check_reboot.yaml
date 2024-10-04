@@ -11,6 +11,17 @@
       ansible.builtin.stat:
         path: "/var/run/reboot-required"
 
+    - name: Send Gotify push
+      ansible.builtin.uri:
+        url: https://gotify.mattjsullivan.uk/message?token=AUkLWSRlxnq66Kk
+        method: POST
+        body_format: json
+        body:
+          title: "Restart warning"
+          message: "Reboot required on {{ inventory_hostname }}!"
+          priority: 10
+      when: reboot_required.stat is defined and reboot_required.stat.exists
+
     - name: Send a message to the Discord channel when reboot is required
       ignore_errors: true
       community.general.discord:

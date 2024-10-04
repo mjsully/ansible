@@ -14,6 +14,17 @@
     - debug:
         var: disk_usage.stdout_lines[0]
 
+    - name: Send Gotify push
+      ansible.builtin.uri:
+        url: https://gotify.mattjsullivan.uk/message?token=AUkLWSRlxnq66Kk
+        method: POST
+        body_format: json
+        body:
+          title: "Disk usage warning"
+          message: "Disk space on {{ inventory_hostname }} is {{disk_usage.stdout[:-1]|int}}%"
+          priority: 10
+      when: disk_usage.stdout is defined and disk_usage and disk_usage.stdout[:-1]|int > 80
+
     - name: Send discord message when disk space is over 80%
       ignore_errors: true
       community.general.discord:

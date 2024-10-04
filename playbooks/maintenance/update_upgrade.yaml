@@ -12,3 +12,13 @@
         upgrade: true
         autoclean: true
         autoremove: true
+
+    - name: Send Gotify push
+      ansible.builtin.uri:
+        url: https://gotify.mattjsullivan.uk/message?token=AUkLWSRlxnq66Kk
+        method: POST
+        body_format: json
+        body:
+          title: "Update notification"
+          message: "Updates complete on {{ inventory_hostname }}!"
+          priority: 10
