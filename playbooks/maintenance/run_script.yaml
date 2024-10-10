@@ -7,5 +7,9 @@
   tasks:
 
     - name: run script
+      register: output
       ansible.builtin.shell:
         cmd: . {{SCRIPT}}
+
+    - debug:
+        var: output
