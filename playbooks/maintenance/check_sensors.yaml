@@ -43,16 +43,11 @@
         string_output: "{{string_output[0]}}"
       when: string_output is defined
 
-    - name: Publish a message on an MQTT topic
-      become: True
-      community.general.mqtt:
-        topic: 'proxmox/temp/{{inventory_hostname}}'
-        payload: '{{string_output}}'
-        qos: 0
-        username: "{{mqtt_user}}"
-        password: "{{mqtt_password}}"
-        server: "{{mqtt_server}}"
-      when: string_output is defined
-      delegate_to: localhost
-      vars:
-        ansible_become: false
+    - name: post data to HTTP endpoint
+      ansible.builtin.uri:
+        url: https://nodered.local.mattjsullivan.uk/proxmox
+        method: "POST"
+        body_format: "json"
+        body: 
+          temperature: "{{string_output}}"
+          hostname: "{{inventory_hostname}}"

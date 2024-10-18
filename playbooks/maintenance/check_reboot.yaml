@@ -33,15 +33,15 @@
       vars:
         ansible_become: false
     
-    - name: Publish a message on an MQTT topic
-      community.general.mqtt:
-        topic: 'semaphore/restart'
-        payload: "Reboot required on {{ inventory_hostname }}!"
-        qos: 0
-        username: "{{mqtt_user}}"
-        password: "{{mqtt_password}}"
-        server: "{{mqtt_server}}"
-      when: reboot_required.stat is defined and reboot_required.stat.exists
-      delegate_to: localhost
-      vars:
-        ansible_become: false
+    # - name: Publish a message on an MQTT topic
+    #   community.general.mqtt:
+    #     topic: 'semaphore/restart'
+    #     payload: "Reboot required on {{ inventory_hostname }}!"
+    #     qos: 0
+    #     username: "{{mqtt_user}}"
+    #     password: "{{mqtt_password}}"
+    #     server: "{{mqtt_server}}"
+    #   when: reboot_required.stat is defined and reboot_required.stat.exists
+    #   delegate_to: localhost
+    #   vars:
+    #     ansible_become: false
