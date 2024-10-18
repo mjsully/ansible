@@ -1,0 +1,26 @@
+---
+- name: Rollout dozzle agent container
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: Copy dozzle folder to remote host
+      ansible.builtin.copy:
+        src: ./dozzle-agent
+        dest: /home/serveradmin/
+
+    - name: Run dozzle container
+      shell: |
+        cd /home/serveradmin/dozzle-agent/
+        docker compose down
+        docker compose up -d
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines
