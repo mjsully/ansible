@@ -51,3 +51,4 @@
         body: 
           temperature: "{{string_output}}"
           hostname: "{{inventory_hostname}}"
+      when: string_output is defined
