@@ -14,8 +14,7 @@
     - name: Run dozzle container
       shell: |
         cd /home/serveradmin/dozzle-agent/
-        docker compose down
-        docker compose up -d
+        docker compose pull && docker compose down && docker compose up -d
 
     - name: Get container status
       register: container_status
