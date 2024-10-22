@@ -45,3 +45,4 @@
           storage: "{{disk_usage.stdout[:-1]|int}}"
           hostname: "{{inventory_hostname}}"
       when: disk_usage.stdout is defined
+      delegate_to: localhost
