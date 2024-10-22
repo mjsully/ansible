@@ -3,6 +3,8 @@
   hosts: all
   become: true
   ignore_unreachable: true
+  vars:
+    - mode: copy
 
   tasks:
 
@@ -12,3 +14,8 @@
         remote_src: yes
         src: "{{src_directory}}/"
         dest: "{{dest_directory}}/"
+
+    - name: Delete source files
+      ansible.builtin.shell:
+        cmd: "rm -rf {{src_directory}}/*"
+      when: mode == "move"
