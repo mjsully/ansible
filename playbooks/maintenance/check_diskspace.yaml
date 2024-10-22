@@ -46,3 +46,5 @@
           hostname: "{{inventory_hostname}}"
       when: disk_usage.stdout is defined
       delegate_to: localhost
+      vars:
+        ansible_become: false
