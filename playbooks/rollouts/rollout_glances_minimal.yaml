@@ -2,6 +2,7 @@
 - name: Rollout glances container (minimal)
   hosts: all
   become: true
+  ignore_unreachable: true
     
   tasks:
 

@@ -1,8 +1,9 @@
 ---
-- name: Rollout glances container
+- name: Rollout glances container (gpu)
   hosts: all
   become: true
-
+  ignore_unreachable: true
+    
   tasks:
 
     - name: Copy glances folder to remote host
@@ -10,14 +11,19 @@
         src: ./glances-gpu
         dest: /home/serveradmin/
 
+    - name: Remove existing glances container
+      ignore_errors: true
+      ansible.builtin.shell:
+        cmd: docker container stop glances && docker container rm glances
+
     - name: Run glances container
-      ansible.builtin.command:
+      ansible.builtin.shell:
         chdir: /home/serveradmin/glances-gpu
-        cmd: docker compose up -d --build
+        cmd: docker compose pull && docker compose down && docker compose up -d
 
     - name: Get container status
       register: container_status
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: docker ps
 
     - debug:
