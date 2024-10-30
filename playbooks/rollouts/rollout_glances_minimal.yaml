@@ -10,6 +10,10 @@
         src: ./glances-minimal
         dest: /home/serveradmin/
 
+    - name: Remove existing glances container
+      ansible.builtin.shell:
+        cmd: docker container stop glances && docker container rm glances
+
     - name: Run glances container
       ansible.builtin.shell:
         chdir: /home/serveradmin/glances-minimal
