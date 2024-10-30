@@ -8,11 +8,11 @@
     - name: Copy glances folder to remote host
       ansible.builtin.copy:
         src: ./glances-minimal
-        dest: ~/
+        dest: /home/serveradmin/
 
     - name: Run glances container
       ansible.builtin.command:
-        chdir: ~/glances-minimal
+        chdir: /home/serveradmin/glances-minimal
         cmd: docker compose pull && docker compose down && docker compose up -d
 
     - name: Get container status
