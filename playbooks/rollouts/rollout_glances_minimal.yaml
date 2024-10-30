@@ -1,5 +1,5 @@
 ---
-- name: Rollout glances container
+- name: Rollout glances container (minimal)
   hosts: all
   become: true
     
@@ -11,13 +11,13 @@
         dest: /home/serveradmin/
 
     - name: Run glances container
-      ansible.builtin.command:
+      ansible.builtin.shell:
         chdir: /home/serveradmin/glances-minimal
         cmd: docker compose pull && docker compose down && docker compose up -d
 
     - name: Get container status
       register: container_status
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: docker ps
 
     - debug:
