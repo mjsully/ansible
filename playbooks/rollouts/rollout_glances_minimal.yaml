@@ -11,6 +11,7 @@
         dest: /home/serveradmin/
 
     - name: Remove existing glances container
+      ignore_errors: true
       ansible.builtin.shell:
         cmd: docker container stop glances && docker container rm glances
 
