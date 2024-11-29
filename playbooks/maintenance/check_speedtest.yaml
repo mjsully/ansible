@@ -10,9 +10,11 @@
       register: speedtest_result
       ansible.builtin.shell:
         cmd: "docker run -it --rm ghcr.io/mjsully/docker-speedtest"
-    
-    - debug:
+
+    - name: Print result when defined
+      ansible.builtin.debug:
         msg: "{{speedtest_result.stdout_lines[6]}}, {{speedtest_result.stdout_lines[8]}}"
+      when: speedtest_result is changed
 
     # - name: Send Gotify push
     #   ansible.builtin.uri:
