@@ -1,0 +1,50 @@
+---
+- name: Run speedtest
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: Run speedtest
+      register: speedtest_result
+      ansible.builtin.shell:
+        cmd: "docker run -it --rm ghcr.io/mjsully/docker-speedtest"
+    
+    - debug:
+        msg: "{{speedtest_result.stdout_lines[6]}}, {{speedtest_result.stdout_lines[8]}}"
+
+    # - name: Send Gotify push
+    #   ansible.builtin.uri:
+    #     url: https://gotify.mattjsullivan.uk/message?token={{gotify_token}}
+    #     method: POST
+    #     body_format: json
+    #     body:
+    #       title: "Disk usage warning"
+    #       message: "Disk space on {{ inventory_hostname }} is {{disk_usage.stdout[:-1]|int}}%"
+    #       priority: 10
+    #   when: disk_usage.stdout is defined and disk_usage and disk_usage.stdout[:-1]|int > 80
+
+    # - name: Send discord message when disk space is over 80%
+    #   ignore_errors: true
+    #   community.general.discord:
+    #     webhook_id: "{{webhook_id}}"
+    #     webhook_token: "{{webhook_token}}"
+    #     content: "Disk space on {{ inventory_hostname }} is above 80%!"
+    #   when: disk_usage.stdout is defined and disk_usage and disk_usage.stdout[:-1]|int > 80
+    #   delegate_to: localhost
+    #   vars:
+    #     ansible_become: false
+
+    # - name: post data to HTTP endpoint
+    #   ansible.builtin.uri:
+    #     url: https://nodered.local.mattjsullivan.uk/vm/storage
+    #     method: "POST"
+    #     body_format: "json"
+    #     body: 
+    #       storage: "{{disk_usage.stdout[:-1]|int}}"
+    #       hostname: "{{inventory_hostname}}"
+    #   when: disk_usage.stdout is defined
+    #   delegate_to: localhost
+    #   vars:
+    #     ansible_become: false
