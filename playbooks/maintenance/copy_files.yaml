@@ -4,7 +4,7 @@
   become: true
   ignore_unreachable: true
   vars:
-    - mode: copy
+    mode: copy
 
   tasks:
 

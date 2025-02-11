@@ -20,5 +20,5 @@
         body_format: json
         body:
           title: "Update notification"
-          message: "Updates complete on {{ inventory_hostname }}!"
+          message: "Updates complete on {{inventory_hostname}}!"
           priority: 10
