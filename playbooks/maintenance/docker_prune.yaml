@@ -6,6 +6,20 @@
 
   tasks:
 
+    - name: Read disk usage
+      register: initial_disk_usage
+      ansible.builtin.shell:
+        cmd: "df -h / | awk 'NR==2 {print $5}'"
+
     - name: prune Docker system
       ansible.builtin.shell:
-        cmd: docker system prune -f
+        cmd: docker system prune -fa
+
+    - name: Read disk usage
+      register: final_disk_usage
+      ansible.builtin.shell:
+        cmd: "df -h / | awk 'NR==2 {print $5}'"
+
+    - name: Print result
+      ansible.builtin.debug:
+        msg: "Initial disk usage: {{initial_disk_usage.stdout[:-1]}}%, final disk usage: {{final_disk_usage.stdout[:-1]}}%"
