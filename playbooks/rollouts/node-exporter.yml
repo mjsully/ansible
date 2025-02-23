@@ -1,0 +1,25 @@
+---
+- name: Rollout node-exporter container
+  hosts: all
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: Copy node-exporter folder to remote host
+      ansible.builtin.copy:
+        src: ./node-exporter
+        dest: /home/serveradmin/
+
+    - name: Run node-exporter container
+      shell: |
+        cd /home/serveradmin/node-exporter/
+        docker compose pull && docker compose down && docker compose up -d
+
+    - name: Get container status
+      register: container_status
+      ansible.builtin.command:
+        cmd: docker ps
+
+    - debug:
+        var: container_status.stdout_lines
