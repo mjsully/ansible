@@ -11,7 +11,7 @@
         dest: /home/serveradmin/
 
     - name: Run portainer agent
-      ansible.builtin.command:
+      ansible.builtin.shell:
         chdir: /home/serveradmin/portainer_agent
         cmd: docker compose pull && docker compose down && docker compose up -d 
 
