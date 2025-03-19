@@ -5,7 +5,7 @@
 
   tasks:
 
-    - name: Copy glances folder to remote host
+    - name: Copy portainer agent folder to remote host
       ansible.builtin.copy:
         src: ./portainer_agent
         dest: /home/serveradmin/
@@ -13,7 +13,7 @@
     - name: Run portainer agent
       ansible.builtin.command:
         chdir: /home/serveradmin/portainer_agent
-        cmd: docker compose up -d --build
+        cmd: docker compose pull && docker compose down && docker compose up -d 
 
     - name: Get container status
       register: container_status
