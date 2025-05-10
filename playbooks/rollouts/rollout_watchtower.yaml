@@ -24,7 +24,8 @@
       shell: |
         cd /home/serveradmin/watchtower/
         docker compose down
-        docker compose up -d
+        docker compose pull
+        docker compose up -d --force-recreate
 
     - name: Get container status
       register: container_status
